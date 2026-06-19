@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Зоология: Хордовые — Тренажёр</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2433;
+    --border: #2a3045;
+    --accent: #6ee7b7;
+    --accent2: #818cf8;
+    --warn: #f59e0b;
+    --danger: #f87171;
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    max-width: 300px;
+    margin: 0 24px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .score-badge {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(110,231,183,0.1);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(110,231,183,0.2);
+  }
+
+  /* MAIN NAV */
+  .main-nav {
+    display: flex;
+    gap: 8px;
+    padding: 20px 24px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .nav-btn:hover { border-color: var(--accent2); color: var(--text); }
+  .nav-btn.active {
+    background: rgba(129,140,248,0.15);
+    border-color: var(--accent2);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  /* SCREENS */
+  .screen { display: none; padding: 24px; max-width: 900px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* HOME */
+  .hero {
+    text-align: center;
+    padding: 40px 0 32px;
+  }
+  .hero-emoji { font-size: 64px; margin-bottom: 16px; display: block; }
+  .hero h1 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p { color: var(--muted); max-width: 480px; margin: 0 auto 32px; }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .mode-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+  .mode-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(110,231,183,0.1);
+  }
+  .mode-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+  .mode-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .mode-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* THEORY CARDS */
+  .theory-group { margin-bottom: 32px; }
+  .theory-group-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .theory-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .theory-card-head {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .theory-card-head:hover { background: var(--surface2); }
+  .theory-card-head h3 { font-size: 14px; font-weight: 600; }
+  .theory-card-head span { color: var(--muted); font-size: 18px; transition: transform 0.2s; }
+  .theory-card-head.open span { transform: rotate(180deg); }
+  .theory-card-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--border);
+  }
+  .theory-card-body.open { display: block; }
+  .theory-card-body p { margin-top: 12px; font-size: 14px; color: #c5c9d6; line-height: 1.7; }
+  .theory-card-body ul { margin-top: 8px; padding-left: 18px; }
+  .theory-card-body li { font-size: 13px; color: #c5c9d6; margin-bottom: 4px; line-height: 1.6; }
+  .tag {
+    display: inline-block;
+    background: rgba(110,231,183,0.12);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    border: 1px solid rgba(110,231,183,0.2);
+  }
+  .tag.purple {
+    background: rgba(129,140,248,0.12);
+    color: var(--accent2);
+    border-color: rgba(129,140,248,0.2);
+  }
+
+  /* COMPARISON TABLE */
+  .table-wrap { overflow-x: auto; margin-top: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 700px; }
+  th {
+    background: var(--surface2);
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--accent2);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #c5c9d6;
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--surface2); }
+  .cell-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .cell-green { background: rgba(16,185,129,0.15); color: #10b981; }
+  .cell-purple { background: rgba(129,140,248,0.15); color: #818cf8; }
+  .cell-yellow { background: rgba(245,158,11,0.15); color: #f59e0b; }
+  .cell-red { background: rgba(248,113,113,0.15); color: #f87171; }
+
+  /* QUIZ */
+  .quiz-container { max-width: 640px; margin: 0 auto; }
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .quiz-meta .q-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .question-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.18s;
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .option:hover:not(:disabled) { border-color: var(--accent2); background: rgba(129,140,248,0.08); }
+  .option.correct { border-color: var(--correct); background: rgba(16,185,129,0.12); color: #6ee7b7; }
+  .option.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.1); color: #fca5a5; }
+  .option:disabled { cursor: default; }
+
+  .feedback {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    display: none;
+    line-height: 1.6;
+  }
+  .feedback.correct { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+  .feedback.wrong { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+  .feedback.show { display: block; }
+
+  .btn {
+    background: linear-gradient(135deg, var(--accent), #34d399);
+    color: #0d1117;
+    border: none;
+    padding: 13px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 16px;
+    transition: opacity 0.2s, transform 0.1s;
+    display: inline-block;
+  }
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn.secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  /* RESULTS */
+  .result-box {
+    text-align: center;
+    padding: 40px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+  }
+  .result-emoji { font-size: 64px; margin-bottom: 16px; }
+  .result-box h2 {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .result-score {
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--accent);
+    font-family: 'Unbounded', sans-serif;
+    margin: 16px 0 8px;
+  }
+
+  /* FLASHCARDS */
+  .flashcard-wrap { perspective: 1000px; max-width: 560px; margin: 24px auto; }
+  .flashcard {
+    width: 100%;
+    aspect-ratio: 3/2;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.55s ease;
+    cursor: pointer;
+  }
+  .flashcard.flipped { transform: rotateY(180deg); }
+  .card-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .card-front { background: var(--surface); }
+  .card-back {
+    background: linear-gradient(135deg, #1a1f35, #161c2e);
+    transform: rotateY(180deg);
+    border-color: var(--accent2);
+  }
+  .card-face .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .card-front .label { color: var(--accent); }
+  .card-back .label { color: var(--accent2); }
+  .card-face h2 { font-size: 20px; font-weight: 600; line-height: 1.4; }
+  .card-back h2 { font-size: 16px; color: #e0e4f0; }
+  .card-hint { font-size: 13px; color: var(--muted); margin-top: 16px; }
+
+  .fc-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    align-items: center;
+  }
+  .fc-counter { font-size: 13px; color: var(--muted); }
+  .btn-sm {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-sm:hover { border-color: var(--accent2); }
+  .btn-sm.green { border-color: var(--correct); color: var(--correct); }
+  .btn-sm.red { border-color: var(--wrong); color: var(--wrong); }
+
+  /* MNEMONICS */
+  .mnemonic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+  .mnemonic-card h3 { font-size: 14px; font-weight: 600; color: var(--accent2); margin-bottom: 8px; }
+  .mnemonic-card p { font-size: 14px; color: #c5c9d6; line-height: 1.7; }
+  .mnemonic-card .trick {
+    margin-top: 10px;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--warn);
+    font-style: italic;
+  }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+    border-radius: 1px;
+  }
+  .tl-item { position: relative; margin-bottom: 24px; }
+  .tl-dot {
+    position: absolute;
+    left: -26px;
+    top: 4px;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .tl-item h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .tl-item p { font-size: 13px; color: #a0a8be; line-height: 1.6; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: -16px;
+    margin-bottom: 20px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 20px; }
+    .mode-grid { grid-template-columns: 1fr 1fr; }
+    .card-face h2 { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🧬 Хордовые</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+  </div>
+  <div class="score-badge" id="scoreDisplay">0 ✦</div>
+</div>
+
+<nav class="main-nav">
+  <button class="nav-btn active" onclick="showScreen('home')">🏠 Главная</button>
+  <button class="nav-btn" onclick="showScreen('theory')">📖 Теория</button>
+  <button class="nav-btn" onclick="showScreen('table')">📊 Таблица</button>
+  <button class="nav-btn" onclick="startFlashcards()">🃏 Карточки</button>
+  <button class="nav-btn" onclick="startQuiz()">⚡ Тест</button>
+  <button class="nav-btn" onclick="showScreen('mnemonics')">🧠 Мнемоники</button>
+  <button class="nav-btn" onclick="showScreen('evolution')">🕐 Эволюция</button>
+</nav>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="hero">
+    <span class="hero-emoji">🦈</span>
+    <h1>Выучи Хордовых<br>за 2 часа</h1>
+    <p>7 классов животных, все системы органов, сравнительные признаки. Начни с теории, потом карточки, потом тест.</p>
+  </div>
+
+  <div class="mode-grid">
+    <div class="mode-card" onclick="showScreen('theory')">
+      <span class="mode-icon">📖</span>
+      <h3>Теория</h3>
+      <p>Весь материал по темам с раскрывающимися блоками</p>
+    </div>
+    <div class="mode-card" onclick="showScreen('table')">
+      <span class="mode-icon">📊</span>
+      <h3>Сравнение</h3>
+      <p>Итоговая таблица по всем классам и системам</p>
+    </div>
+    <div class="mode-card" onclick="startFlashcards()">
+      <span class="mode-icon">🃏</span>
+      <h3>Карточки</h3>
+      <p>Термин → определение. Перелистывай и запоминай</p>
+    </div>
+    <div class="mode-card" onclick="startQuiz()">
+      <span class="mode-icon">⚡</span>
+      <h3>Тест</h3>
+      <p>40 вопросов с объяснениями правильных ответов</p>
+    </div>
+    <div class="mode-card" onclick="showScreen('mnemonics')">
+      <span class="mode-icon">🧠</span>
+      <h3>Мнемоники</h3>
+      <p>Приёмы для запоминания сложных признаков</p>
+    </div>
+    <div class="mode-card" onclick="showScreen('evolution')">
+      <span class="mode-icon">🕐</span>
+      <h3>Эволюция</h3>
+      <p>Хронология ароморфозов от ланцетника до человека</p>
+    </div>
+  </div>
+
+  <div style="margin-top:32px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px 24px;">
+    <div style="font-size:12px;font-weight:700;color:var(--warn);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">⏱ Рекомендуемый план на 2 часа</div>
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:14px;">
+      <span style="color:var(--accent);font-weight:600;">0–30 мин</span><span style="color:#c5c9d6;">Теория — читай раскрывая блоки по каждому классу</span>
+      <span style="color:var(--accent);font-weight:600;">30–50 мин</span><span style="color:#c5c9d6;">Сравнительная таблица — смотри, запоминай паттерны</span>
+      <span style="color:var(--accent);font-weight:600;">50–80 мин</span><span style="color:#c5c9d6;">Карточки — гони пока не ошибёшься менее 3 раз</span>
+      <span style="color:var(--accent);font-weight:600;">80–110 мин</span><span style="color:#c5c9d6;">Тест — 40 вопросов, читай объяснения к ошибкам</span>
+      <span style="color:var(--accent);font-weight:600;">110–120 мин</span><span style="color:#c5c9d6;">Мнемоники + повтор слабых мест</span>
+    </div>
+  </div>
+</div>
+
+<!-- THEORY -->
+<div id="screen-theory" class="screen">
+  <div class="section-title">📖 Теория</div>
+  <p class="section-subtitle">Нажми на заголовок чтобы раскрыть блок</p>
+
+  <div id="theory-content"></div>
+</div>
+
+<!-- TABLE -->
+<div id="screen-table" class="screen">
+  <div class="section-title">📊 Сравнительная таблица</div>
+  <p class="section-subtitle">Главные признаки всех классов хордовых</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Признак</th>
+          <th>Ланцетник</th>
+          <th>Круглоротые</th>
+          <th>Хрящ. рыбы</th>
+          <th>Костные рыбы</th>
+          <th>Амфибии</th>
+          <th>Рептилии</th>
+          <th>Птицы</th>
+          <th>Млекопит.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Сердце</b></td>
+          <td>нет (брюшная аорта)</td>
+          <td><span class="cell-tag cell-red">2-камерное</span></td>
+          <td><span class="cell-tag cell-red">2-камерное</span></td>
+          <td><span class="cell-tag cell-red">2-камерное</span></td>
+          <td><span class="cell-tag cell-yellow">3-камерное</span></td>
+          <td><span class="cell-tag cell-yellow">3-камерное*</span></td>
+          <td><span class="cell-tag cell-green">4-камерное</span></td>
+          <td><span class="cell-tag cell-green">4-камерное</span></td>
+        </tr>
+        <tr>
+          <td><b>Кругов кровообращения</b></td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>2</td>
+          <td>2</td>
+          <td>2</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td><b>Температура тела</b></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-red">холодная</span></td>
+          <td><span class="cell-tag cell-green">тёплая 40-42°</span></td>
+          <td><span class="cell-tag cell-green">тёплая 36-38°</span></td>
+        </tr>
+        <tr>
+          <td><b>Дыхание</b></td>
+          <td>жаберные щели глотки</td>
+          <td>7 пар жаберных мешков</td>
+          <td>5-7 пар жаберных щелей</td>
+          <td>жабры с крышкой</td>
+          <td>лёгкие + кожа</td>
+          <td>ячеистые лёгкие</td>
+          <td>лёгкие + возд. мешки</td>
+          <td>альвеолярные лёгкие</td>
+        </tr>
+        <tr>
+          <td><b>Почки</b></td>
+          <td>протонефридии</td>
+          <td><span class="cell-tag cell-yellow">мезонефрос</span></td>
+          <td><span class="cell-tag cell-yellow">мезонефрос</span></td>
+          <td><span class="cell-tag cell-yellow">мезонефрос</span></td>
+          <td><span class="cell-tag cell-yellow">мезонефрос</span></td>
+          <td><span class="cell-tag cell-green">метанефрос</span></td>
+          <td><span class="cell-tag cell-green">метанефрос</span></td>
+          <td><span class="cell-tag cell-green">метанефрос</span></td>
+        </tr>
+        <tr>
+          <td><b>Продукт выделения</b></td>
+          <td>–</td>
+          <td>аммиак</td>
+          <td>мочевина</td>
+          <td>аммиак</td>
+          <td>мочевина</td>
+          <td><span class="cell-tag cell-purple">мочевая к-та</span></td>
+          <td><span class="cell-tag cell-purple">мочевая к-та</span></td>
+          <td>мочевина</td>
+        </tr>
+        <tr>
+          <td><b>Позвоночник</b></td>
+          <td>нет (хорда)</td>
+          <td>хрящевые дуги</td>
+          <td>амфицельные хрящ.</td>
+          <td>амфицельные костные</td>
+          <td>4 отдела</td>
+          <td>5 отделов</td>
+          <td>5 отделов</td>
+          <td>5 отделов, 7 шейн.</td>
+        </tr>
+        <tr>
+          <td><b>Кожа</b></td>
+          <td>однослойный эпидермис</td>
+          <td>голая, слизистая</td>
+          <td>плакоидная чешуя</td>
+          <td>ганоидная/циклоидная/ктеноидная</td>
+          <td>голая, влажная</td>
+          <td>роговая чешуя (сухая)</td>
+          <td>перья</td>
+          <td>волосы + железы</td>
+        </tr>
+        <tr>
+          <td><b>Оплодотворение</b></td>
+          <td>наружное</td>
+          <td>наружное</td>
+          <td>внутреннее</td>
+          <td>наружное</td>
+          <td>наружное</td>
+          <td>внутреннее</td>
+          <td>внутреннее</td>
+          <td>внутреннее</td>
+        </tr>
+        <tr>
+          <td><b>Мозг</b></td>
+          <td>нет (нервная трубка)</td>
+          <td>5 отделов (слабых)</td>
+          <td>обоняние + мозжечок</td>
+          <td>зрение + мозжечок</td>
+          <td>2 полушария, стриатум</td>
+          <td>архикортекс</td>
+          <td>стриатум, огромные зрит. доли</td>
+          <td>неокортекс</td>
+        </tr>
+        <tr>
+          <td><b>Особые признаки</b></td>
+          <td>протонефридии, нет ЦНС</td>
+          <td>нет челюстей</td>
+          <td>ампулы Лоренцини</td>
+          <td>плавательный пузырь</td>
+          <td>мочевой пузырь, среднее ухо</td>
+          <td>амниотическое яйцо</td>
+          <td>двойное дыхание, киль</td>
+          <td>млечные железы, диафрагма</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px;font-size:12px;color:var(--muted);">* У крокодилов — 4-камерное сердце, исключение среди рептилий</div>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="screen-flashcards" class="screen">
+  <div class="section-title">🃏 Карточки</div>
+  <p class="section-subtitle" id="fc-subtitle">Нажми на карточку чтобы перевернуть</p>
+
+  <div class="flashcard-wrap">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div class="card-face card-front">
+        <div class="label">Термин / Вопрос</div>
+        <h2 id="fc-front">—</h2>
+        <div class="card-hint">Нажми, чтобы увидеть ответ</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="label">Ответ</div>
+        <h2 id="fc-back">—</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-controls">
+    <button class="btn-sm red" onclick="fcMark(false)">✗ Не знаю</button>
+    <span class="fc-counter" id="fc-counter">1 / 0</span>
+    <button class="btn-sm green" onclick="fcMark(true)">✓ Знаю</button>
+  </div>
+  <div style="text-align:center;margin-top:16px;">
+    <button class="btn-sm" onclick="fcShuffle()">🔀 Перемешать</button>
+    <button class="btn-sm" style="margin-left:8px;" onclick="fcReset()">↺ Сначала</button>
+  </div>
+  <div id="fc-progress" style="margin-top:20px;text-align:center;font-size:13px;color:var(--muted);"></div>
+</div>
+
+<!-- QUIZ -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-container">
+    <div id="quiz-question-area"></div>
+  </div>
+</div>
+
+<!-- MNEMONICS -->
+<div id="screen-mnemonics" class="screen">
+  <div class="section-title">🧠 Мнемоники и подсказки</div>
+  <p class="section-subtitle">Как быстро запомнить самое важное</p>
+
+  <div class="mnemonic-card">
+    <h3>Сердце: 1 → 2 → 3 → 4 камеры</h3>
+    <p>Ланцетник → Рыбы → Амфибии/Рептилии → Птицы/Млекопитающие</p>
+    <div class="trick">«Один круглый хрящ кости амфибии — Рептилии Птицы Мыши» = прогрессия 1→2→3→4 (считай классы)</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Почки: прото → мезо → метанефрос</h3>
+    <p>«Прежде мозг, метро потом» — протонефридии (ланцетник), мезонефрос (рыбы, амфибии), метанефрос (рептилии, птицы, млеки)</p>
+    <div class="trick">Метанефрос = «META» = высокоуровневая версия. Начинается с рептилий — первых настоящих наземных.</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Продукт выделения</h3>
+    <p>Аммиак → мочевина → мочевая кислота</p>
+    <div class="trick">«Рыбы — аммиак (много воды, не страшно). Амфибии — мочевина (чуть экономнее). Рептилии и птицы — мочевая кислота (в виде пасты, воду не тратят)».<br>Запомни: МочевАЯ КИСЛОТА = эКОНОМИЯ воды = наземные амниоты</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>7 шейных позвонков у млекопитающих</h3>
+    <p>У ВСЕХ млекопитающих ровно 7 — и у жирафа, и у кита, и у землеройки.</p>
+    <div class="trick">«Семь — магическое число млеков». Исключений почти нет (разве ленивцы с 6 или 9).</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Аорта: птицы правая, млеки левая</h3>
+    <p>Дуга аорты у птиц — правая. У млекопитающих — левая. Частая ловушка в тестах!</p>
+    <div class="trick">«Птицы ПРАвы» = ПРАвая дуга. Млекопитающие = ЛЕВАЯ (леВАЯ → отличается от птиц).</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Ароморфозы амниот</h3>
+    <p>Рептилии = первые НАСТОЯЩИЕ наземные. Что появляется впервые:<br>
+    → Амниотическое яйцо (аллантоис, амнион, хорион)<br>
+    → Метанефрос<br>
+    → Мочевая кислота<br>
+    → Роговая чешуя<br>
+    → 5 отделов позвоночника<br>
+    → Кора больших полушарий (архикортекс)</p>
+    <div class="trick">«Рептилия пять раз метнула мочевую кислоту в Амниотик» = 5 отделов, метанефрос, мочевая кислота, амниотическое яйцо</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Спиральный клапан</h3>
+    <p>Есть у хрящевых рыб (в тонкой кишке) и у амфибий (в артериальном конусе сердца). В обоих случаях — компенсирует примитивность организации.</p>
+    <div class="trick">«СПираль = СПасение примитивных»: у хрящевых увеличивает площадь всасывания, у амфибий разделяет потоки крови в трёхкамерном сердце.</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Двойное дыхание птиц</h3>
+    <p>Воздух проходит через лёгкие ДВАЖДЫ: на вдохе и на выдохе. Это благодаря 9 воздушным мешкам.</p>
+    <div class="trick">Схема: Вдох → (жёсткие лёгкие) → задние мешки. Выдох → из задних мешков СНОВА через лёгкие → наружу. Газообмен идёт непрерывно.</div>
+  </div>
+
+  <div class="mnemonic-card">
+    <h3>Три слуховые косточки млекопитающих</h3>
+    <p>Молоточек, наковальня, стремечко. Молоточек и наковальня произошли из костей нижней челюсти рептилий!</p>
+    <div class="trick">«Молот и наковальня — из рептильной челюсти». У рептилий нижняя челюсть состоит из 6 костей; 2 из них «переехали» в ухо. Вот почему у млекопитающих в челюсти одна зубная кость.</div>
+  </div>
+</div>
+
+<!-- EVOLUTION -->
+<div id="screen-evolution" class="screen">
+  <div class="section-title">🕐 Эволюция хордовых: ключевые ароморфозы</div>
+  <p class="section-subtitle">Что появилось впервые у каждой группы</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Ланцетник (Головохордовые)</h3>
+      <p>Исходный план строения: хорда + нервная трубка + жаберные щели + хвост за анусом. Однослойный эпидермис, протонефридии, нет черепа.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Круглоротые — первый череп</h3>
+      <p>Появляется хрящевой череп (нет челюстей!). 5 отделов мозга. 2-камерное сердце. Личиночная стадия с метаморфозом (пескоройка). Гемоглобин в крови.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Хрящевые рыбы — первые челюсти и парные плавники</h3>
+      <p>Революция: челюсти (из I висцеральной дуги). Парные конечности (плавники). Внутреннее оплодотворение. Ампулы Лоренцини. Мочевина для осморегуляции.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Костные рыбы — костный скелет и плавательный пузырь</h3>
+      <p>Костный скелет (быстрее, жёстче). Жаберная крышка → активная вентиляция. Плавательный пузырь = гидростатика. 30 000 видов — рекорд.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Земноводные — выход на сушу</h3>
+      <p>5-палая конечность. 2 круга кровообращения. 3-камерное сердце. Лёгкие. Мочевой пузырь. Среднее ухо. Хоаны. Кожное дыхание. Но размножение в воде!</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Рептилии — настоящие наземные (амниоты)</h3>
+      <p>Амниотическое яйцо! Метанефрос. Мочевая кислота. Роговая чешуя. 5 отделов позвоночника. Межрёберное дыхание. Архикортекс. 12 пар черепных нервов.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Птицы — завоевание воздуха</h3>
+      <p>Теплокровность. 4-камерное сердце. Перья. Двойное дыхание (воздушные мешки). Пневматические кости. Киль. Правая дуга аорты. Редукция правого яйцевода.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <h3>Млекопитающие — высшие амниоты</h3>
+      <p>Неокортекс. Диафрагма. Млечные железы. Живорождение (плацента). Безъядерные эритроциты. 3 слуховые косточки. Гетеродонтные зубы. Петля Генле. Левая дуга аорты.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const theoryData = [
+  {
+    group: "Тема 1. Головохордовые",
+    emoji: "🦐",
+    items: [
+      {
+        title: "Общая характеристика ланцетника",
+        body: `<p>Морское животное 4–8 см, зарывается в песок, фильтратор. <b>Не позвоночное</b>, но показывает исходный план строения хордовых.</p>
+        <p>Четыре признака хордовых: хорда, нервная трубка, глотка с жаберными щелями, хвост за анусом.</p>
+        <div style="margin-top:10px"><span class="tag">Branchiostoma lanceolatum</span></div>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<ul><li>Хорда сохраняется <b>всю жизнь</b>, тянется от головы до хвоста</li><li>Эпидермис <b>однослойный</b> (у всех остальных хордовых — многослойный)</li><li>Кожных желёз нет</li><li>Черепа, позвонков, парных конечностей — нет</li></ul>`
+      },
+      {
+        title: "Мышцы, пищеварение, кровообращение",
+        body: `<p><b>Мышцы:</b> ~60 пар V-образных миомеров, разделённых миосептами. Сегментированные, как у рыб.</p>
+        <p><b>Пищеварение:</b> Рот окружён оральными щупальцами. Глотка с 100–150 парами жаберных щелей. Есть печёночный вырост. Питается диатомовыми водорослями, бактериями.</p>
+        <p><b>Кровообращение:</b> Один круг. Сердца нет — роль выполняет <b>пульсирующая брюшная аорта</b>. Кровь бесцветная (нет гемоглобина).</p>`
+      },
+      {
+        title: "Выделение, нервная система, размножение",
+        body: `<p><b>Выделение:</b> Протонефридии (~90 пар над глоткой) — примитивный тип беспозвоночных.</p>
+        <p><b>НС:</b> Нервная трубка, головного мозга нет, лишь слабое расширение на переднем конце. Пигментный глазок Гессе. Спинные и брюшные корешки не сливаются.</p>
+        <p><b>Размножение:</b> Раздельнополые, ~26 пар сегментарных гонад, наружное оплодотворение, метаморфоз.</p>`
+      }
+    ]
+  },
+  {
+    group: "Тема 2. Круглоротые (Cyclostomata)",
+    emoji: "🐟",
+    items: [
+      {
+        title: "Общая характеристика и виды",
+        body: `<p>Первые черепные. <b>Нет челюстей</b>, нет парных плавников, нет настоящих позвонков.</p>
+        <ul><li><b>Миноги</b> (Petromyzontida) — пресные воды, эктопаразиты, есть глаза</li><li><b>Миксины</b> (Myxini) — морские, слепые, падальщики</li></ul>
+        <div style="margin-top:8px"><span class="tag">Ключевой признак</span> <b>Нет челюстей</b> — бесчелюстные</div>`
+      },
+      {
+        title: "Скелет, кожа, мышцы",
+        body: `<ul><li>Кожа голая, слизистая, богата одноклеточными железами — нет чешуи</li><li>Хорда сохраняется, вокруг неё — хрящевые дуги (зачатки позвонков)</li><li>Череп хрящевой, висцеральный скелет = решётчатая хрящевая корзина</li><li>Мышцы сегментированные, развиты кольцевые мышцы ротовой воронки</li></ul>`
+      },
+      {
+        title: "Пищеварение и дыхание",
+        body: `<p><b>Пищеварение:</b> Ротовая воронка с роговыми зубами. Язык-поршень соскребает ткани. Кишечник прямой. Нет клоаки.</p>
+        <p><b>Дыхание:</b> 7 пар жаберных мешков, каждый открывается наружу отдельным отверстием. При присасывании вода через жабры идёт в обоих направлениях.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 1 круг, 2-камерное сердце (предсердие + желудочек + венозная пазуха + артериальный конус). Кровь красная, есть гемоглобин.</p>
+        <p><b>Выделение:</b> Личинка — пронефрос (головная почка), взрослые — мезонефрос. Продукт — аммиак.</p>
+        <p><b>НС:</b> 5 отделов мозга (слабых). 10 пар черепных нервов. Теменной (пинеальный) орган. Органы боковой линии.</p>
+        <p><b>Размножение:</b> Минога гибнет после нереста. Личинка-пескоройка живёт 3–5 лет в иле, питается фильтрацией → метаморфоз.</p>`
+      }
+    ]
+  },
+  {
+    group: "Тема 3. Хрящевые рыбы (Chondrichthyes)",
+    emoji: "🦈",
+    items: [
+      {
+        title: "Общая характеристика",
+        body: `<p>Первые <b>челюстноротые</b> позвоночные с <b>парными конечностями</b>. Скелет хрящевой — вторичное упрощение (предки имели кость). ~1000 видов: акулы, скаты, химеры.</p>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<ul><li><b>Плакоидная чешуя</b> — древнейший тип, каждая чешуйка = видоизменённый зуб (пульпа + дентин + витродентин)</li><li>Скелет хрящевой, может пропитываться солями Са (петрификация)</li><li>Хорда редуцирована — есть амфицельные позвонки</li><li>Челюсти из I висцеральной дуги (нёбно-квадратный хрящ + меккелев хрящ)</li></ul>`
+      },
+      {
+        title: "Пищеварение и дыхание",
+        body: `<p><b>Пищеварение:</b> Рот на брюшной стороне. Желудок J-образный. <b>Спиральный клапан</b> тонкой кишки — увеличивает площадь всасывания. Ректальная железа выделяет лишние соли. Клоака.</p>
+        <p><b>Дыхание:</b> 5–7 пар жаберных щелей, открытых наружу. <b>Брызгальце</b> (рудимент I жаберной щели) — особенно у скатов. Плавательного пузыря нет — жировая печень обеспечивает плавучесть.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 1 круг, 2-камерное сердце. Артериальный конус с рядами клапанов — активно сокращается (примитивный признак).</p>
+        <p><b>Выделение:</b> Мезонефрос. В крови накапливается <b>мочевина (~2%) и триметиламиноксид</b> — для осмотического равновесия с морской водой (осмоконформеры).</p>
+        <p><b>НС:</b> Обонятельные доли (кровь за км), мозжечок крупный, боковая линия, <b>ампулы Лоренцини</b> — электрорецепторы.</p>
+        <p><b>Размножение:</b> Внутреннее (птеригоподии у самцов). Яйцеживорождение / живорождение / яйцекладка (роговые капсулы).</p>`
+      }
+    ]
+  },
+  {
+    group: "Темы 4–5. Костные рыбы (Osteichthyes)",
+    emoji: "🐠",
+    items: [
+      {
+        title: "Общая характеристика (~30 000 видов)",
+        body: `<p>Освоили все водоёмы. <b>Больше всех видов среди позвоночных</b>. Ключевые новшества: костный скелет, жаберная крышка, плавательный пузырь.</p>`
+      },
+      {
+        title: "Покровы, чешуя, скелет",
+        body: `<p><b>Чешуя:</b> ганоидная (осетровые), <b>циклоидная</b> (гладкая, карповые), <b>ктеноидная</b> (с зубчиками, окунёвые).</p>
+        <p><b>Жаберная крышка</b> (operculum, 4 кости) — защищает жабры и создаёт ток воды.</p>
+        <p><b>Скелет:</b> позвонки амфицельные, пояс передних конечностей (лопатка, коракоид, клейтрум — связан с черепом), хвостовой плавник гомоцеркальный.</p>`
+      },
+      {
+        title: "Пищеварение и дыхание",
+        body: `<p><b>Пищеварение:</b> Рот терминальный. Пилорические придатки — слепые выросты у начала кишечника. Хорошо развиты печень и поджелудочная. Нет клоаки.</p>
+        <p><b>Дыхание:</b> Жабры с лепестками (огромная поверхность). <b>Плавательный пузырь</b> — вырост пищевода: у физостомных (карп) связан с кишечником, у физоклистных (окунь) замкнут. Функция — гидростатика. У двоякодышащих пузырь = лёгкое.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 1 круг, 2-камерное сердце. Вместо артериального конуса — <b>луковица аорты</b> (эластичная, не сокращается — только сглаживает пульсацию).</p>
+        <p><b>Выделение:</b> Мезонефрос, продукт — аммиак. У морских: пьют воду, выделяют мало мочи. У пресноводных: постоянно фильтруют воду.</p>
+        <p><b>НС:</b> Развиты мозжечок и зрительные доли (зрение важнее обоняния, в отличие от акул). Боковая линия.</p>
+        <p><b>Размножение:</b> Чаще наружное, нерест. Плодовитость огромная (треска — до 10 млн икринок).</p>`
+      }
+    ]
+  },
+  {
+    group: "Темы 6–7. Земноводные (Amphibia)",
+    emoji: "🐸",
+    items: [
+      {
+        title: "Общая характеристика",
+        body: `<p>Первые наземные позвоночные. Но наземность неполная — размножение и личиночное развитие привязаны к воде.</p>
+        <p>Три отряда: <b>Бесхвостые</b> (лягушки), <b>Хвостатые</b> (саламандры), <b>Безногие</b> (червяги).</p>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<p><b>Кожа:</b> голая, тонкая, всегда влажная — участвует в дыхании и осморегуляции. Огромное количество желёз: слизистые (увлажнение) и зернистые (яды — буфотоксин, батрахотоксин). Нет чешуи, нет когтей.</p>
+        <p><b>Скелет:</b> 4 отдела позвоночника (шейный — 1 позвонок-атлант; туловищный; крестцовый — 1 позвонок; хвостовой, у бесхвостых = уростиль). Рёбра рудиментарны — грудной клетки нет. <b>5-палая конечность</b> — впервые!</p>`
+      },
+      {
+        title: "Пищеварение и дыхание",
+        body: `<p><b>Пищеварение:</b> Большая ротоглоточная полость. Липкий язык, прикреплён спереди (бросок). <b>Хоаны</b> (внутренние ноздри) — впервые! Клоака.</p>
+        <p><b>Дыхание:</b> Лёгкие мешкообразные (слабые). Кожное дыхание: ~50% O₂ через кожу. Механизм нагнетательный (не рёберный). Личинки → наружные жабры → внутренние → лёгкие.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 2 круга, 3-камерное сердце (левое предсердие + правое предсердие + 1 желудочек). Кровь смешивается, но спиральный клапан в артериальном конусе частично разделяет потоки. Кожно-лёгочная артерия.</p>
+        <p><b>Выделение:</b> Мезонефрос. Продукт — мочевина. <b>Мочевой пузырь — впервые</b> у наземных! Реабсорбирует воду.</p>
+        <p><b>НС:</b> Передний мозг разделён на 2 полушария (стриатум). 10 пар черепных нервов. Мозжечок маленький. <b>Среднее ухо — впервые!</b></p>
+        <p><b>Размножение:</b> Наружное оплодотворение, амплексус. Метаморфоз: яйцо → головастик (жабры, боковая линия, хвост) → лягушка.</p>`
+      }
+    ]
+  },
+  {
+    group: "Темы 8–9. Пресмыкающиеся (Reptilia)",
+    emoji: "🦎",
+    items: [
+      {
+        title: "Общая характеристика — первые амниоты",
+        body: `<p>Первые настоящие наземные позвоночные. <b>Амниотическое яйцо</b> освободило от воды при размножении.</p>
+        <p>Группы: Чешуйчатые (ящерицы, змеи), Черепахи, Крокодилы, Клювоголовые (гаттерия).</p>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<p><b>Кожа:</b> Роговая чешуя или щитки из эпидермиса (не гомологична рыбьей!). Кожных желёз почти нет — сухая кожа — нет кожного дыхания. Линька.</p>
+        <p><b>Скелет:</b> 5 отделов позвоночника. Атлант + эпистрофей — подвижность головы. Грудная клетка (рёбра + грудина). У змей: до 400 позвонков, рёбра на всех туловищных, конечностей нет. У черепах: карапакс = рёбра + позвонки + накладные кости.</p>`
+      },
+      {
+        title: "Мышцы, пищеварение, дыхание",
+        body: `<p><b>Мышцы:</b> Межрёберные мышцы обеспечивают рёберное дыхание. У змей — мышцы, двигающие рёбра (передвижение).</p>
+        <p><b>Пищеварение:</b> Слюнные железы (у змей — ядовитые). У змей квадратная кость подвижна — глотают добычу крупнее себя. Клоака.</p>
+        <p><b>Дыхание:</b> Лёгкие ячеистые (лучше, чем у амфибий). Только лёгочное, рёберное. Кожного нет.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 2 круга, 3-камерное сердце с неполной перегородкой (минимальное смешивание). Крокодилы — исключение: <b>4-камерное сердце</b>, но есть Боталлов проток.</p>
+        <p><b>Выделение:</b> <b>Метанефрос</b> — ароморфоз! Продукт — <b>мочевая кислота</b> (пастообразная, экономия воды). Часто нет мочевого пузыря.</p>
+        <p><b>НС:</b> Крупнее передний мозг. <b>Архикортекс</b> — впервые кора! 12 пар черепных нервов. Якобсонов орган у змей. Цветное зрение у дневных видов.</p>
+        <p><b>Размножение:</b> Внутреннее. Амниотическое яйцо: амнион + аллантоис + хорион + желточный мешок. Яйцеживорождение у части видов.</p>`
+      }
+    ]
+  },
+  {
+    group: "Темы 10–11. Птицы (Aves)",
+    emoji: "🦅",
+    items: [
+      {
+        title: "Общая характеристика",
+        body: `<p>Теплокровные амниоты, приспособленные к полёту. Все системы подчинены: <b>снижению веса</b> и <b>высокому метаболизму</b>.</p>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<p><b>Перья:</b> контурные (летательные, кроющие), пуховые (терморегуляция), нитевидные, щетинковые. Копчиковая железа.</p>
+        <p><b>Скелет:</b> Пневматические кости. <b>Киль</b> (carina) на грудине — прикрепление грудных мышц. <b>Вилочка</b> (furcula) — сросшиеся ключицы. <b>Синсакрум</b> — сросшиеся позвонки с тазом. <b>Пигостиль</b> — рулевые перья. Цевка — кости плюсны + предплюсны. Шейный отдел: 11–25 позвонков, гетероцельные.</p>`
+      },
+      {
+        title: "Мышцы, пищеварение, дыхание",
+        body: `<p><b>Мышцы:</b> Большая грудная (до 25% массы тела) — опускает крыло. Малая грудная (подключичная) — поднимает крыло. Нет мимических мышц.</p>
+        <p><b>Пищеварение:</b> Клюв без зубов. Зоб. Железистый желудок (химический) + мышечный желудок (гастролиты). Нет мочевого пузыря.</p>
+        <p><b>Дыхание:</b> Жёсткие губчатые лёгкие. 9 воздушных мешков. <b>Двойное дыхание</b>: газообмен и на вдохе, и на выдохе — непрерывный.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 2 круга, <b>4-камерное сердце</b>. Теплокровность 40–42°C. <b>Правая дуга аорты</b> (у млеков — левая!). ЧСС у колибри до 1200 уд/мин. Эритроциты ядерные, овальные.</p>
+        <p><b>Выделение:</b> Метанефрос, мочевая кислота, нет мочевого пузыря.</p>
+        <p><b>НС:</b> Огромные зрительные доли (острота зрения в 5–8 раз выше человека). Мозжечок крупный. Стриатум — центр сложного поведения. Коры почти нет.</p>
+        <p><b>Размножение:</b> Внутреннее. У самок одно <b>левое</b> яичко (правое редуцировано). Яйцо с известковой скорлупой. Насиживание. Выводковые и гнездовые птенцы.</p>`
+      }
+    ]
+  },
+  {
+    group: "Темы 12–13. Млекопитающие (Mammalia)",
+    emoji: "🐘",
+    items: [
+      {
+        title: "Общая характеристика",
+        body: `<p>Высшие амниоты. Главное — <b>кора головного мозга</b> и забота о потомстве через <b>молоко</b>.</p>
+        <p>Три подкласса: Однопроходные, Сумчатые, Плацентарные.</p>`
+      },
+      {
+        title: "Покровы и скелет",
+        body: `<p><b>Кожа:</b> Волосы. Потовые, сальные, молочные (видоизменённые потовые), мускусные железы. Когти/ногти/копыта.</p>
+        <p><b>Скелет:</b> <b>7 шейных позвонков</b> (даже у жирафа и кита!). Нижняя челюсть из 1 кости — зубная кость (у рептилий 6). Две другие → 3 слуховые косточки: <b>молоточек + наковальня</b> (из челюстей!) + стремечко. <b>Диафрагма</b>. Конечности под телом — вертикальная постановка.</p>`
+      },
+      {
+        title: "Мышцы, пищеварение, дыхание",
+        body: `<p><b>Мышцы:</b> Диафрагма (главная дыхательная). Мимические мышцы — уникальны! Сложная жевательная мускулатура.</p>
+        <p><b>Пищеварение:</b> Гетеродонтные зубы: резцы, клыки, премоляры, моляры. Зубная формула. Зубы в альвеолах. Вторичное нёбо (можно жевать и дышать одновременно). У жвачных 4-камерный желудок: рубец → сетка → книжка → сычуг.</p>
+        <p><b>Дыхание:</b> Альвеолярные лёгкие (~100 м² у человека). Диафрагмально-рёберное дыхание. Голосовые связки.</p>`
+      },
+      {
+        title: "Кровообращение, выделение, нервная система",
+        body: `<p><b>Кровообращение:</b> 2 круга, 4-камерное сердце. <b>Левая дуга аорты</b> (у птиц — правая!). <b>Безъядерные эритроциты</b> — больше гемоглобина. Теплокровность 36–38°C.</p>
+        <p><b>Выделение:</b> Метанефрос с корковым и мозговым веществом. <b>Петля Генле</b> — концентрирует мочу (особенно у пустынных видов). Продукт — мочевина. Мочевой пузырь есть.</p>
+        <p><b>НС:</b> <b>Неокортекс</b> — многослойная новая кора, с извилинами. Основа обучения, памяти, абстрактного мышления. 12 пар черепных нервов. Лимбическая система (эмоции).</p>
+        <p><b>Размножение:</b> Однопроходные — яйцекладущие + молоко без сосков. Сумчатые — недоразвитый зародыш → сумка. Плацентарные — хориоаллантоисная плацента, долгая беременность.</p>`
+      }
+    ]
+  }
+];
+
+const flashcards = [
+  {f:"Хорда у ланцетника", b:"Сохраняется всю жизнь, тянется от головы до хвоста. У позвоночных замещается позвоночником."},
+  {f:"Протонефридии", b:"Выделительные органы ланцетника (~90 пар). Примитивный тип, характерный для беспозвоночных. У позвоночных — нефроны."},
+  {f:"Пульсирующая брюшная аорта ланцетника", b:"Выполняет функцию сердца — сердца как такового у ланцетника нет. Кровь бесцветная (нет гемоглобина)."},
+  {f:"Глазок Гессе", b:"Пигментный светочувствительный орган ланцетника. Аналог глаза, расположен в нервной трубке."},
+  {f:"Пескоройка", b:"Личинка миноги. Живёт 3–5 лет в иле, питается фильтрацией, затем метаморфоз во взрослую миногу."},
+  {f:"Жаберные мешки круглоротых", b:"7 пар, каждый открывается наружу отдельным отверстием (в отличие от жаберных щелей рыб)."},
+  {f:"Бесчелюстные (Agnatha)", b:"Надкласс, включающий круглоротых (миноги и миксины). Ключевой признак — нет челюстей."},
+  {f:"Плакоидная чешуя", b:"Древнейший тип чешуи хрящевых рыб. Каждая чешуйка = видоизменённый зуб (пульпа + дентин + витродентин)."},
+  {f:"Птеригоподии", b:"Видоизменённые брюшные плавники самцов хрящевых рыб — орган внутреннего оплодотворения."},
+  {f:"Ампулы Лоренцини", b:"Электрорецепторы хрящевых рыб (акулы, скаты). Улавливают биотоки жертвы в воде."},
+  {f:"Спиральный клапан кишечника", b:"У хрящевых рыб — продольная спиральная складка тонкой кишки, увеличивает площадь всасывания без удлинения кишечника."},
+  {f:"Артериальный конус vs луковица аорты", b:"Артериальный конус — мышечный, активно сокращается, есть у хрящевых рыб и амфибий (примитив). Луковица аорты — эластичная, не сокращается, у костных рыб (только сглаживает пульсацию)."},
+  {f:"Физостомные vs физоклистные рыбы", b:"Физостомные (карп): плавательный пузырь связан с кишечником. Физоклистные (окунь): пузырь замкнут, газ выделяется сосудистой сетью."},
+  {f:"Хоаны", b:"Внутренние ноздри — впервые появляются у земноводных. Соединяют носовую полость с ротоглоткой, позволяют дышать при закрытом рте."},
+  {f:"Нагнетательное дыхание", b:"Механизм дыхания земноводных: дно ротовой полости опускается (воздух входит в рот), затем поднимается — нагнетает воздух в лёгкие. У рептилий → рёберное дыхание."},
+  {f:"Уростиль", b:"Сросшиеся хвостовые позвонки у бесхвостых амфибий (лягушек). Остаток хвостового отдела позвоночника."},
+  {f:"Мочевой пузырь земноводных", b:"Появляется впервые у земноводных. Тонкостенный, реабсорбирует воду обратно в кровь — важно для выживания вне воды."},
+  {f:"Амплексус", b:"Способ спаривания земноводных: самец обхватывает самку для наружного оплодотворения."},
+  {f:"Амниотическое яйцо", b:"Яйцо с оболочками: амнион (водная среда зародыша), аллантоис (дыхание + накопление отходов), хорион (газообмен), желточный мешок (питание). Появилось у рептилий — ароморфоз."},
+  {f:"Метанефрос", b:"Тазовые (вторичные) почки. Появились у рептилий — значительный ароморфоз. Гораздо эффективнее мезонефроса. Есть у рептилий, птиц, млекопитающих."},
+  {f:"Мочевая кислота", b:"Продукт азотистого обмена у рептилий и птиц. Нерастворима, выводится в пастообразном виде — максимальная экономия воды. У млекопитающих — мочевина."},
+  {f:"Якобсонов орган", b:"Орган хеморецепции у змей и ящериц. Воспринимает химические частицы с кончика языка."},
+  {f:"Атлант и эпистрофей", b:"Первые два шейных позвонка рептилий, птиц, млекопитающих. Обеспечивают подвижность головы: атлант — кивание, эпистрофей — поворот."},
+  {f:"Двойное дыхание птиц", b:"Газообмен происходит и на вдохе, и на выдохе. На вдохе воздух идёт через лёгкие в задние мешки; на выдохе — из задних мешков снова через лёгкие. 9 воздушных мешков."},
+  {f:"Киль птиц (carina)", b:"Вырост грудины птиц — место прикрепления грудных мышц, обеспечивающих полёт. У нелетающих птиц (страус) — редуцирован."},
+  {f:"Вилочка (furcula)", b:"Сросшиеся ключицы птиц. Пружинит при взмахах крыльев, накапливая и отдавая энергию."},
+  {f:"Синсакрум", b:"Слитная кость птиц из грудных + поясничных + крестцовых + хвостовых позвонков, сросшихся с тазом. Обеспечивает жёсткость при посадке."},
+  {f:"Правая vs левая дуга аорты", b:"Птицы — ПРАВАЯ дуга аорты. Млекопитающие — ЛЕВАЯ. Частая ловушка на экзаменах!"},
+  {f:"Неокортекс", b:"Новая кора больших полушарий млекопитающих. Многослойная, с извилинами у крупных видов. Основа обучения, памяти, абстрактного мышления. Отсутствует у птиц (у них — стриатум)."},
+  {f:"Петля Генле", b:"Длинная петля нефрона млекопитающих, обеспечивает концентрацию мочи. Особенно длинная у пустынных видов (тушканчики)."},
+  {f:"7 шейных позвонков", b:"У всех млекопитающих ровно 7 шейных позвонков — и у жирафа, и у кита, и у летучей мыши. Почти без исключений (ленивцы — исключение)."},
+  {f:"Три слуховые косточки", b:"Молоточек + наковальня + стремечко. Молоточек и наковальня произошли из костей нижней челюсти предков-рептилий. Вот почему у млекопитающих нижняя челюсть из 1 кости."},
+  {f:"Диафрагма", b:"Мышечная перегородка между грудной и брюшной полостью — уникальна для млекопитающих. Главная дыхательная мышца."},
+  {f:"Мезонефрос vs метанефрос", b:"Мезонефрос (туловищная почка) — у рыб и амфибий. Метанефрос (тазовая почка) — у рептилий, птиц, млекопитающих. Метанефрос эффективнее."},
+  {f:"Аммиак vs мочевина vs мочевая кислота", b:"Аммиак — рыбы (токсичен, нужно много воды). Мочевина — амфибии и млекопитающие (менее токсична, нужно воды меньше). Мочевая кислота — рептилии и птицы (нерастворима, почти без воды)."},
+  {f:"Пронефрос, мезонефрос, метанефрос", b:"Три типа почек в эволюции. Пронефрос (головная почка) — личинки рыб и амфибий. Мезонефрос (туловищная) — взрослые рыбы и амфибии. Метанефрос (тазовая) — рептилии, птицы, млекопитающие."},
+  {f:"Спиральный клапан в сердце амфибий", b:"Находится в артериальном конусе трёхкамерного сердца. Частично разделяет венозную и артериальную кровь при выходе из желудочка."},
+  {f:"Брызгальце хрящевых рыб", b:"Рудимент первой жаберной щели. Особенно развито у скатов — вода входит в жабры сверху через брызгальце (а не через рот, который прижат ко дну)."},
+  {f:"Гетероцельные позвонки птиц", b:"Позвонки шейного отдела птиц седловидной формы — обеспечивают огромную подвижность шеи (11–25 позвонков)."},
+  {f:"Архикортекс vs неокортекс", b:"Архикортекс (древняя кора) — появляется впервые у рептилий. Неокортекс (новая кора) — только у млекопитающих, обеспечивает высшую нервную деятельность."}
+];
+
+const quizData = [
+  {q:"У ланцетника роль сердца выполняет:", opts:["брюшная аорта","спинная аорта","венозный синус","нет аналога"], a:0, exp:"У ланцетника нет сердца — его роль выполняет пульсирующая брюшная аорта. Кровь бесцветная (нет гемоглобина)."},
+  {q:"Эпидермис однослойный только у:", opts:["Круглоротых","Ланцетника","Хрящевых рыб","Костных рыб"], a:1, exp:"Только у ланцетника эпидермис однослойный — это примитивный признак. У всех остальных хордовых (начиная с круглоротых) — многослойный."},
+  {q:"Какой орган выделения у ланцетника?", opts:["Мезонефрос","Метанефрос","Протонефридии","Мальпигиевы сосуды"], a:2, exp:"У ланцетника протонефридии (~90 пар) — примитивный тип, характерный для беспозвоночных. У всех позвоночных — нефроны (мезо- или метанефрос)."},
+  {q:"Нет челюстей у:", opts:["Хрящевых рыб","Костных рыб","Круглоротых","Амфибий"], a:2, exp:"Круглоротые (миноги, миксины) — бесчелюстные. Это их ключевой признак. Ротовая воронка с роговыми зубами, но настоящих челюстей нет."},
+  {q:"Жаберных мешков у миноги:", opts:["5 пар","7 пар","4 пары","10 пар"], a:1, exp:"У миноги 7 пар жаберных мешков, каждый открывается наружу отдельным отверстием (а не под жаберной крышкой, как у костных рыб)."},
+  {q:"Плакоидная чешуя — это:", opts:["Гладкая костная чешуя","Чешуя с зубчиками","Чешуя = видоизменённый зуб","Ромбическая чешуя из ганоина"], a:2, exp:"Плакоидная чешуя хрящевых рыб — каждая чешуйка структурно идентична зубу: пульпа + дентин + витродентин. Эволюционно зубы произошли от плакоидной чешуи."},
+  {q:"Ампулы Лоренцини — это:", opts:["Механорецепторы боковой линии","Электрорецепторы хрящевых рыб","Хеморецепторы обоняния","Термочувствительные органы"], a:1, exp:"Ампулы Лоренцини — электрорецепторы акул и скатов. Улавливают биотоки жертвы, позволяя охотиться даже в мутной воде или песке."},
+  {q:"Брызгальце хрящевых рыб — это:", opts:["Рудимент I жаберной щели","Рудимент плавательного пузыря","Орган боковой линии","Дополнительная жаберная щель"], a:0, exp:"Брызгальце = рудимент первой жаберной щели. Особенно развито у скатов: они лежат на дне, и вода входит в жабры сверху через брызгальце, а не через рот."},
+  {q:"У костных рыб вместо артериального конуса:", opts:["Венозная пазуха","Луковица аорты","Аортальная дуга","Перикард"], a:1, exp:"У костных рыб артериальный конус (мышечный, активно сокращается) заменён луковицей аорты — эластичной структурой, которая не сокращается, а только сглаживает пульсацию крови."},
+  {q:"Плавательный пузырь у физоклистных рыб (окунь):", opts:["Связан с кишечником","Замкнут, газ из сосудов","Связан с жабрами","Отсутствует"], a:1, exp:"Физоклистные рыбы (окунь, треска) — плавательный пузырь замкнут, газ выделяется и поглощается через красное тело (газовую железу). Физостомные (карп) — связан с пищеводом."},
+  {q:"Хоаны впервые появляются у:", opts:["Хрящевых рыб","Двоякодышащих рыб","Земноводных","Круглоротых"], a:2, exp:"Хоаны (внутренние ноздри) впервые появились у земноводных. Они соединяют носовую полость с ротоглоткой и позволяют дышать при закрытом рте."},
+  {q:"Механизм дыхания у земноводных:", opts:["Рёберное","Нагнетательное","Диафрагмальное","Двойное"], a:1, exp:"У земноводных нагнетательное дыхание: дно ротовой полости опускается (воздух входит в рот через ноздри), затем поднимается — нагнетает воздух в лёгкие. Рёберного дыхания нет (рёбра рудиментарны)."},
+  {q:"Какая доля кислорода поступает через кожу у лягушки?", opts:["~10%","~25%","~50%","~80%"], a:2, exp:"У лягушки около 50% кислорода поступает через кожу (кожное дыхание). Поэтому кожа должна быть всегда влажной — высыхание смертельно."},
+  {q:"Сердце земноводных:", opts:["2-камерное","3-камерное","4-камерное","2-камерное с венозной пазухой"], a:1, exp:"У земноводных 3-камерное сердце: левое предсердие + правое предсердие + 1 желудочек. Кровь смешивается, но спиральный клапан в артериальном конусе частично разделяет потоки."},
+  {q:"Мочевой пузырь у наземных позвоночных впервые появляется у:", opts:["Рептилий","Земноводных","Птиц","Млекопитающих"], a:1, exp:"Мочевой пузырь впервые появился у земноводных. Он тонкостенный и реабсорбирует воду обратно в кровь — важная адаптация к жизни вне воды."},
+  {q:"Уростиль — это:", opts:["Первый шейный позвонок лягушки","Сросшиеся хвостовые позвонки лягушки","Последний туловищный позвонок","Крестцовый позвонок"], a:1, exp:"Уростиль — сросшиеся хвостовые позвонки бесхвостых амфибий (лягушки, жабы). Рудимент хвостового отдела позвоночника."},
+  {q:"Амниотическое яйцо содержит оболочки:", opts:["Только амнион и желточный мешок","Амнион, аллантоис, хорион, желточный мешок","Только хорион и аллантоис","Только желточный мешок"], a:1, exp:"Амниотическое яйцо содержит: амнион (водная среда для зародыша), аллантоис (дыхание + накопление отходов), хорион (газообмен с внешней средой), желточный мешок (питание)."},
+  {q:"Метанефрос впервые появился у:", opts:["Земноводных","Хрящевых рыб","Рептилий","Двоякодышащих"], a:2, exp:"Метанефрос (тазовые, или вторичные почки) — ароморфоз рептилий. Значительно эффективнее мезонефроса. Есть у рептилий, птиц и млекопитающих."},
+  {q:"Мочевую кислоту выделяют:", opts:["Рыбы и амфибии","Только рептилии","Рептилии и птицы","Птицы и млекопитающие"], a:2, exp:"Мочевую кислоту (нерастворимую, в виде пасты) выделяют рептилии и птицы — это максимально экономит воду. Рыбы выделяют аммиак, амфибии и млекопитающие — мочевину."},
+  {q:"Архикортекс (древняя кора) впервые появляется у:", opts:["Земноводных","Рептилий","Птиц","Млекопитающих"], a:1, exp:"Кора больших полушарий впервые появляется у рептилий — это архикортекс (древняя кора). У птиц коры почти нет (сложное поведение обеспечивает стриатум). Неокортекс — только у млекопитающих."},
+  {q:"Сердце крокодилов:", opts:["2-камерное","3-камерное","4-камерное с Боталловым протоком","4-камерное без исключений"], a:2, exp:"У крокодилов 4-камерное сердце с полной перегородкой — они исключение среди рептилий. Но есть Боталлов проток: при нырянии кровь идёт в обход лёгких."},
+  {q:"Двойное дыхание птиц обеспечивают:", opts:["Эластичные растяжимые лёгкие","Жёсткие лёгкие + воздушные мешки","Жаберные мешки + лёгкие","Альвеолы + плевральные мешки"], a:1, exp:"Птицы имеют жёсткие губчатые лёгкие (не растягиваются) и 9 воздушных мешков. На вдохе воздух идёт через лёгкие в задние мешки, на выдохе — из задних мешков снова через лёгкие. Газообмен — оба раза."},
+  {q:"Киль (carina) птиц — это:", opts:["Выступ лопатки","Вырост грудины для прикрепления грудных мышц","Сросшиеся ключицы","Хвостовые позвонки"], a:1, exp:"Киль (carina) — вырост грудины птиц. К нему крепится большая грудная мышца (до 25% массы тела), которая опускает крыло при взмахе."},
+  {q:"Вилочка (furcula) птиц — это:", opts:["Сросшиеся ключицы","Сросшиеся позвонки","Сросшиеся кости плюсны","Хвостовые позвонки"], a:0, exp:"Вилочка = сросшиеся ключицы птиц. Она пружинит при взмахах крыльев, накапливая и отдавая энергию. Именно её называют «wishbone» и ломают на счастье."},
+  {q:"Дуга аорты у птиц:", opts:["Левая, как у млекопитающих","Правая","Две дуги","Нет дуги"], a:1, exp:"У птиц ПРАВАЯ дуга аорты. У млекопитающих — ЛЕВАЯ. Это частая ловушка на экзаменах! Запомни: «Птицы ПРАвы»."},
+  {q:"Эритроциты птиц:", opts:["Безъядерные, круглые","Ядерные, овальные","Безъядерные, овальные","Ядерные, круглые"], a:1, exp:"У птиц эритроциты ядерные и овальные. У млекопитающих — безъядерные (нет ядра → больше места для гемоглобина → лучший транспорт кислорода)."},
+  {q:"У самок птиц:", opts:["Два яичника, оба функционируют","Одно правое яичко","Одно левое яичко и один яйцевод","Два яйцевода"], a:2, exp:"У самок птиц одно левое яичко и один левый яйцевод — правый редуцирован. Это уменьшение веса — важная адаптация к полёту."},
+  {q:"Шейных позвонков у всех млекопитающих:", opts:["6","7","8","Разное количество"], a:1, exp:"У всех млекопитающих ровно 7 шейных позвонков — и у жирафа, и у кита, и у летучей мыши. Это одно из правил зоологии без исключений (ленивцы — единственные исключения с 6 или 9)."},
+  {q:"Нижняя челюсть млекопитающих состоит из:", opts:["6 костей","3 костей","1 кости (зубная кость)","2 костей"], a:2, exp:"У млекопитающих нижняя челюсть из одной зубной кости. У рептилий — из 6 костей. Две из них (квадратная и сочленовная) у млекопитающих стали слуховыми косточками: молоточком и наковальней!"},
+  {q:"Петля Генле в почках обеспечивает:", opts:["Фильтрацию крови","Концентрацию мочи","Реабсорбцию глюкозы","Выработку ренина"], a:1, exp:"Петля Генле — длинная петля нефрона млекопитающих. Создаёт осмотический градиент в мозговом веществе почки и обеспечивает концентрирование мочи. Особенно длинная у пустынных видов."},
+  {q:"Неокортекс — это:", opts:["Древняя кора рептилий","Новая кора птиц","Новая многослойная кора млекопитающих","Обонятельная кора рыб"], a:2, exp:"Неокортекс — многослойная новая кора больших полушарий, уникальная для млекопитающих. Основа обучения, памяти, абстрактного мышления. У птиц вместо коры — развитый стриатум."},
+  {q:"Диафрагма уникальна для:", opts:["Рептилий","Птиц","Млекопитающих","Всех амниот"], a:2, exp:"Диафрагма — мышечная перегородка между грудной и брюшной полостями — уникальна для млекопитающих. Главная дыхательная мышца. Отсутствует у всех остальных позвоночных."},
+  {q:"Дуга аорты у млекопитающих:", opts:["Правая","Левая","Две дуги (правая и левая)","Нет дуги"], a:1, exp:"У млекопитающих ЛЕВАЯ дуга аорты. У птиц — ПРАВАЯ. Запомни: птицы ПРАвы, млеки ЛЕВы."},
+  {q:"Что является продуктом выделения у костных рыб?", opts:["Мочевина","Мочевая кислота","Аммиак","Креатинин"], a:2, exp:"Костные рыбы (как и большинство водных беспозвоночных) выделяют аммиак. Он токсичен, но в воде быстро разбавляется. Амфибии и млекопитающие — мочевину. Рептилии и птицы — мочевую кислоту."},
+  {q:"Головной мозг птиц: что наиболее развито?", opts:["Кора больших полушарий","Стриатум и зрительные доли","Мозжечок и обонятельные доли","Гипоталамус"], a:1, exp:"У птиц наиболее развиты зрительные доли (острота зрения в 5–8 раз выше человека) и стриатум — центр сложного врождённого и приобретённого поведения (пение, гнездование). Коры почти нет."},
+  {q:"Спиральный клапан у амфибий расположен в:", opts:["Тонкой кишке","Артериальном конусе сердца","Аорте","Лёгочной артерии"], a:1, exp:"У амфибий спиральный клапан находится в артериальном конусе сердца. Он частично разделяет венозную и артериальную кровь при выходе из желудочка в сосуды."},
+  {q:"Пигостиль — это:", opts:["Вырост грудины","Сросшиеся ключицы","Сросшиеся хвостовые позвонки птиц","Сросшиеся кости таза"], a:2, exp:"Пигостиль — 4–6 последних хвостовых позвонков, сросшихся вместе. Служит основой для прикрепления рулевых перьев хвоста."},
+  {q:"Первые позвоночные с внутренним оплодотворением:", opts:["Костные рыбы","Хрящевые рыбы","Земноводные","Круглоротые"], a:1, exp:"Внутреннее оплодотворение впервые появилось у хрящевых рыб. Самцы имеют птеригоподии — видоизменённые брюшные плавники для введения спермы."},
+  {q:"Синсакрум птиц — это:", opts:["Киль грудины","Сросшиеся позвонки с тазом","Цевка","Гетероцельный позвонок"], a:1, exp:"Синсакрум — слитная кость из грудных + поясничных + крестцовых + хвостовых позвонков, сросшихся с костями таза. Обеспечивает жёсткость при посадке и ходьбе."},
+  {q:"Три слуховые косточки млекопитающих произошли из:", opts:["Жаберных дуг","Костей нижней челюсти (квадратная + сочленовная → молоточек + наковальня)","Костей черепа","Хрящей носа"], a:1, exp:"Молоточек произошёл из сочленовной кости, наковальня — из квадратной кости нижней челюсти рептилий. В процессе эволюции они «переехали» в среднее ухо. Вот почему у млекопитающих нижняя челюсть из одной кости."},
+  {q:"Мочевина как продукт выделения характерна для:", opts:["Рыб и рептилий","Амфибий и млекопитающих","Всех наземных позвоночных","Рептилий и птиц"], a:1, exp:"Мочевину выделяют амфибии и млекопитающие. Мочевина менее токсична, чем аммиак, и требует меньше воды для растворения. Рептилии и птицы пошли дальше — мочевая кислота вообще почти не требует воды."},
+  {q:"Якобсонов орган — это:", opts:["Электрорецептор рыб","Орган хеморецепции змей и ящериц","Боковая линия рыб","Теменной орган круглоротых"], a:1, exp:"Якобсонов орган (вомероназальный орган) — орган хеморецепции у змей и ящериц. Воспринимает химические вещества с кончика языка. Позволяет «нюхать воздух» языком."}
+];
+
+// ===== STATE =====
+let score = 0;
+let quizIndex = 0;
+let quizAnswered = false;
+let fcIndex = 0;
+let fcDeck = [];
+let fcKnown = 0;
+let fcUnknown = 0;
+
+// ===== INIT =====
+function init() {
+  buildTheory();
+  fcDeck = [...flashcards];
+  updateFC();
+}
+
+function buildTheory() {
+  const container = document.getElementById('theory-content');
+  theoryData.forEach(group => {
+    const groupEl = document.createElement('div');
+    groupEl.className = 'theory-group';
+    groupEl.innerHTML = `<div class="theory-group-title">${group.emoji} ${group.group}</div>`;
+    group.items.forEach((item, i) => {
+      const card = document.createElement('div');
+      card.className = 'theory-card';
+      card.innerHTML = `
+        <div class="theory-card-head" onclick="toggleTheory(this)">
+          <h3>${item.title}</h3>
+          <span>▾</span>
+        </div>
+        <div class="theory-card-body">${item.body}</div>
+      `;
+      groupEl.appendChild(card);
+    });
+    container.appendChild(groupEl);
+  });
+}
+
+function toggleTheory(head) {
+  head.classList.toggle('open');
+  head.nextElementSibling.classList.toggle('open');
+}
+
+// ===== NAVIGATION =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => { if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
+  window.scrollTo(0,0);
+}
+
+// ===== SCORE =====
+function addScore(n) {
+  score += n;
+  document.getElementById('scoreDisplay').textContent = score + ' ✦';
+  const max = quizData.length * 10;
+  document.getElementById('progressBar').style.width = Math.min(100, (score / max) * 100) + '%';
+}
+
+// ===== FLASHCARDS =====
+function startFlashcards() {
+  showScreen('flashcards');
+  document.querySelectorAll('.nav-btn').forEach(b => { if (b.getAttribute('onclick') === 'startFlashcards()') b.classList.add('active'); });
+  fcIndex = 0;
+  fcKnown = 0; fcUnknown = 0;
+  updateFC();
+}
+
+function updateFC() {
+  if (fcIndex >= fcDeck.length) {
+    document.getElementById('fc-front').textContent = '🎉 Готово!';
+    document.getElementById('fc-back').textContent = `Знаю: ${fcKnown}, не знаю: ${fcUnknown}`;
+    document.getElementById('fc-counter').textContent = 'Конец колоды';
+    document.getElementById('fc-progress').textContent = fcUnknown > 0 ? `Нажми «Перемешать» и повтори непознанные` : `Отлично! Все карточки освоены 🎯`;
+    return;
+  }
+  const card = fcDeck[fcIndex];
+  document.getElementById('fc-front').textContent = card.f;
+  document.getElementById('fc-back').textContent = card.b;
+  document.getElementById('fc-counter').textContent = (fcIndex + 1) + ' / ' + fcDeck.length;
+  document.getElementById('flashcard').classList.remove('flipped');
+  document.getElementById('fc-progress').textContent = `Знаю: ${fcKnown} | Не знаю: ${fcUnknown}`;
+}
+
+function flipCard() {
+  document.getElementById('flashcard').classList.toggle('flipped');
+}
+
+function fcMark(known) {
+  if (known) { fcKnown++; addScore(2); }
+  else { fcUnknown++; }
+  fcIndex++;
+  updateFC();
+}
+
+function fcShuffle() {
+  for (let i = fcDeck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [fcDeck[i], fcDeck[j]] = [fcDeck[j], fcDeck[i]];
+  }
+  fcIndex = 0; fcKnown = 0; fcUnknown = 0;
+  updateFC();
+}
+
+function fcReset() {
+  fcDeck = [...flashcards];
+  fcIndex = 0; fcKnown = 0; fcUnknown = 0;
+  updateFC();
+}
+
+// ===== QUIZ =====
+let shuffledQuiz = [];
+
+function startQuiz() {
+  showScreen('quiz');
+  document.querySelectorAll('.nav-btn').forEach(b => { if (b.getAttribute('onclick') === 'startQuiz()') b.classList.add('active'); });
+  shuffledQuiz = [...quizData].sort(() => Math.random() - 0.5);
+  quizIndex = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const area = document.getElementById('quiz-question-area');
+  if (quizIndex >= shuffledQuiz.length) {
+    const pct = Math.round((score / (shuffledQuiz.length * 10)) * 100);
+    let emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+    let msg = pct >= 80 ? 'Отличный результат!' : pct >= 60 ? 'Хороший результат!' : 'Нужно повторить теорию';
+    area.innerHTML = `
+      <div class="result-box">
+        <div class="result-emoji">${emoji}</div>
+        <h2>${msg}</h2>
+        <div class="result-score">${score} ✦</div>
+        <p style="color:var(--muted);margin-bottom:24px">Тест пройден: ${shuffledQuiz.length} вопросов</p>
+        <button class="btn" onclick="startQuiz()">🔄 Пройти снова</button>
+        <button class="btn secondary" style="margin-left:12px" onclick="showScreen('theory')">📖 К теории</button>
+      </div>`;
+    return;
+  }
+
+  const q = shuffledQuiz[quizIndex];
+  quizAnswered = false;
+  area.innerHTML = `
+    <div class="quiz-meta">
+      <span class="q-num">Вопрос ${quizIndex + 1} / ${shuffledQuiz.length}</span>
+      <span>${score} ✦</span>
+    </div>
+    <div class="question-card">
+      <div class="question-text">${q.q}</div>
+      <div class="question-hint">Выбери один правильный ответ</div>
+      <div class="options">
+        ${q.opts.map((opt, i) => `<button class="option" onclick="answerQuiz(${i})" id="opt${i}">${opt}</button>`).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div id="next-btn-area"></div>
+  `;
+}
+
+function answerQuiz(chosen) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = shuffledQuiz[quizIndex];
+  const opts = document.querySelectorAll('.option');
+  opts.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.a) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  const correct = chosen === q.a;
+  if (correct) addScore(10);
+  fb.className = 'feedback show ' + (correct ? 'correct' : 'wrong');
+  fb.innerHTML = (correct ? '✓ Верно! ' : '✗ Неверно. ') + q.exp;
+  document.getElementById('next-btn-area').innerHTML = `<button class="btn" onclick="nextQuestion()">${quizIndex + 1 < shuffledQuiz.length ? 'Следующий вопрос →' : 'Завершить тест'}</button>`;
+}
+
+function nextQuestion() {
+  quizIndex++;
+  renderQuestion();
+}
+
+// ===== START =====
+init();
+</script>
+</body>
+</html>
